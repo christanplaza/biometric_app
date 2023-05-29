@@ -121,7 +121,7 @@ include('../logout.php');
                                                     <td><?php echo $row['first_name']; ?></td>
                                                     <td><?php echo $row['username']; ?></td>
                                                     <td class="d-flex justify-content-evenly">
-                                                        <a href="<?= $rootURL; ?>/admin/enrollments.php?id=<?php echo $row['id']; ?>" class="btn btn-secondary">Enrollment</a>
+                                                        <!-- <a href="<?= $rootURL; ?>/admin/enrollments.php?id=<?php echo $row['id']; ?>" class="btn btn-secondary">Enrollment</a> -->
                                                         <a href="<?= $rootURL; ?>/admin/student.php?id=<?php echo $row['id']; ?>" class="btn btn-primary">View Details</a>
                                                         <form action="$rootURL/admin/student.php?" method="POST">
                                                             <input type="hidden" name="id" id="id" value="<?php echo $row['id']; ?>" />

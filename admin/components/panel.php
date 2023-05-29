@@ -14,11 +14,11 @@
                     Student Management
                 </a>
             </div>
-            <div class="col-12 mb-2">
+            <!-- <div class="col-12 mb-2">
                 <a href="<?= $rootURL; ?>/admin/class_management.php" class="btn btn-primary btn-lg w-100">
                     Class Management
                 </a>
-            </div>
+            </div> -->
             <div class="col-12 mb-2">
                 <a href="<?= $rootURL; ?>/admin/fingerprint_management.php" class="btn btn-primary btn-lg w-100">
                     Fingerprint Management
