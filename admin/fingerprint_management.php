@@ -9,13 +9,13 @@ if ($conn) {
     $faculty_res = mysqli_query($conn, $sql);
 
     if (isset($_POST['submit'])) {
-        if (isset($_POST['id'])) {
-            $id = $_POST['id'];
-            $sql = "DELETE FROM users WHERE id = '$id'";
+        if (isset($_POST['remove_id'])) {
+            $id = $_POST['remove_id'];
+            $sql = "UPDATE users SET fingerprint_id = '0' WHERE id = '$id'";
 
             if (mysqli_query($conn, $sql)) {
                 $_SESSION['msg_type'] = 'success';
-                $_SESSION['flash_message'] = 'Faculty has been removed';
+                $_SESSION['flash_message'] = 'Fingerprint unenrolled.';
                 header("Refresh: 0");
                 session_write_close();
             } else {
@@ -109,10 +109,15 @@ include('../logout.php');
                                                     <td><?php echo $row['last_name']; ?></td>
                                                     <td><?php echo $row['first_name']; ?></td>
                                                     <td><?php echo $row['username']; ?></td>
-                                                    <td><?php echo $row['fingerprint_id'] > 0 ?? '-'; ?></td>
+                                                    <td><?php echo $row['fingerprint_id'] > 0 ? $row['fingerprint_id'] : '-'; ?></td>
                                                     <td>
                                                         <?php if ($row['fingerprint_id'] == 0) : ?>
                                                             <a href="<?= $rootURL; ?>/admin/fingerprint_management/add_fingerprint.php?id=<?php echo $row['id']; ?>" class="btn btn-primary">Assign a Fingerprint</a>
+                                                        <?php else : ?>
+                                                            <form method="POST">
+                                                                <input type="hidden" name="remove_id" value="<?= $row['id']; ?>">
+                                                                <button type="submit" class="btn btn-danger" name="submit">Remove Fingerprint</button>
+                                                            </form>
                                                         <?php endif; ?>
                                                     </td>
                                                 </tr>

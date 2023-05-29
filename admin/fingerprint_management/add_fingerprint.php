@@ -4,59 +4,74 @@ include('../../../config.php');
 $conn = mysqli_connect($host, $username, $password, $database);
 
 if ($conn) {
-    if (isset($_GET['id'])) {
-        $id = $_GET['id'];
-        $sql = "SELECT * FROM users WHERE fingerprint_id <> 0 AND id = '$id'";
 
-        $users_res = mysqli_query($conn, $sql);
+    // Check if there is a row in board_mode
+    $sql = "SELECT * FROM board_mode LIMIT 1";
+    $result = mysqli_query($conn, $sql);
 
-        if (isset($_POST['submit'])) {
-            $fingerprint_id = $_POST['fingerprint_id'];
-            $sql = "SELECT * FROM users WHERE fingerprint_id = '$fingerprint_id'";
+    if (mysqli_num_rows($result) > 0) {
+        $row = mysqli_fetch_assoc($result);
+        $mode = $row['mode'];
 
-            $fingerprint_matches_results = mysqli_query($conn, $sql);
+        if ($mode == "enrollment") {
+            if (isset($_GET['id'])) {
+                $id = $_GET['id'];
+                $sql = "SELECT * FROM users WHERE fingerprint_id <> 0 AND id = '$id'";
 
-            if (mysqli_num_rows($fingerprint_matches_results) > 0) {
-                $_SESSION['msg_type'] = 'danger';
-                $_SESSION['flash_message'] = 'This ID is already used. Try another one.';
-                header("Refresh: 0");
-                session_write_close();
-            } else {
-                $sql = "UPDATE users SET fingerprint_id = '$fingerprint_id' WHERE id = '$id'";
+                $users_res = mysqli_query($conn, $sql);
 
-                if (mysqli_query($conn, $sql)) {
-                    $_SESSION['msg_type'] = 'success';
-                    $_SESSION['flash_message'] = 'Fingerprint ID Assigned to user';
-                    header("location: $rootURL/admin/fingerprint_management.php");
-                    session_write_close();
-                } else {
-                    $_SESSION['msg_type'] = 'danger';
-                    $_SESSION['flash_message'] = 'Something went wrong';
-                    header("location: $rootURL/admin/fingerprint_management.php");
-                    session_write_close();
+                if (isset($_POST['submit'])) {
+                    $fingerprint_id = $_POST['fingerprint_id'];
+
+                    if ($fingerprint_id < 129 && $fingerprint_id > 0) {
+                        $sql = "SELECT * FROM users WHERE fingerprint_id = '$fingerprint_id'";
+
+                        $fingerprint_matches_results = mysqli_query($conn, $sql);
+
+                        if (mysqli_num_rows($fingerprint_matches_results) > 0) {
+                            $_SESSION['msg_type'] = 'danger';
+                            $_SESSION['flash_message'] = 'This ID is already used. Try another one.';
+                            header("Refresh: 0");
+                            session_write_close();
+                        } else {
+                            $sql = "UPDATE users SET fingerprint_id = '$fingerprint_id' WHERE id = '$id'";
+
+                            if (mysqli_query($conn, $sql)) {
+                                $sql = "UPDATE fingerprint_enrollment SET selected_id = '$fingerprint_id', step = '1'";
+
+                                if (mysqli_query($conn, $sql)) {
+                                    $_SESSION['msg_type'] = 'success';
+                                    $_SESSION['flash_message'] = 'Fingerprint ID Assigned to user, restart NodeMCU to begin Enrolling.';
+                                    header("location: $rootURL/admin/fingerprint_management/enroll_fingerprint.php");
+                                    session_write_close();
+                                } else {
+                                    $_SESSION['msg_type'] = 'danger';
+                                    $_SESSION['flash_message'] = 'Something went wrong';
+                                    header("location: $rootURL/admin/fingerprint_management.php");
+                                    session_write_close();
+                                }
+                            } else {
+                                $_SESSION['msg_type'] = 'danger';
+                                $_SESSION['flash_message'] = 'Something went wrong';
+                                header("location: $rootURL/admin/fingerprint_management.php");
+                                session_write_close();
+                            }
+                        }
+                    } else {
+                        $_SESSION['msg_type'] = 'danger';
+                        $_SESSION['flash_message'] = 'This Sensor can only record up to 128 Fingerprints.';
+                        header("Refresh: 0");
+                        session_write_close();
+                    }
                 }
             }
+        } else {
+            $_SESSION['msg_type'] = 'danger';
+            $_SESSION['flash_message'] = 'Set Board Mode to Enrollment';
+            header("location: $rootURL/admin/fingerprint_management.php");
+            session_write_close();
         }
     }
-
-    // if (isset($_POST['submit'])) {
-    //     if (isset($_POST['id'])) {
-    //         $id = $_POST['id'];
-    //         $sql = "DELETE FROM users WHERE id = '$id'";
-
-    //         if (mysqli_query($conn, $sql)) {
-    //             $_SESSION['msg_type'] = 'success';
-    //             $_SESSION['flash_message'] = 'Faculty has been removed';
-    //             header("Refresh: 0");
-    //             session_write_close();
-    //         } else {
-    //             $_SESSION['msg_type'] = 'danger';
-    //             $_SESSION['flash_message'] = 'Something went wrong.';
-    //             header("Refresh: 0");
-    //             session_write_close();
-    //         }
-    //     }
-    // }
 } else {
     echo "Couldn't connect to database.";
 }

@@ -24,9 +24,14 @@
                     Fingerprint Management
                 </a>
             </div>
-            <div class="col-12">
-                <a href="<?= $rootURL; ?>/admin/attendance_logs.php" class="btn btn-primary btn-lg w-100">
+            <div class="col-12 mb-2">
+                <a href="<?= $rootURL; ?>/admin/access_logs.php" class="btn btn-primary btn-lg w-100">
                     Access Logs
+                </a>
+            </div>
+            <div class="col-12">
+                <a href="<?= $rootURL; ?>/admin/board_mode.php" class="btn btn-primary btn-lg w-100">
+                    Board Mode
                 </a>
             </div>
         </div>
