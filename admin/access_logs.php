@@ -3,7 +3,7 @@ include('../../config.php');
 session_start();
 $conn = mysqli_connect($host, $username, $password, $database);
 
-$sql = "SELECT al.*, u.* FROM access_logs al INNER JOIN users u ON u.fingerprint_id = al.fingerprint_id";
+$sql = "SELECT al.*, u.* FROM access_logs al INNER JOIN users u ON u.fingerprint_id = al.fingerprint_id ORDER BY datetime DESC";
 
 $results = mysqli_query($conn, $sql);
 
